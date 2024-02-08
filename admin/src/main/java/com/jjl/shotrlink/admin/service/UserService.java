@@ -8,4 +8,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService extends IService<UserDO> {
     public UserRespDto getUserByUsername(String username);
+    Boolean hasUserByUsername(String username);
 }
