@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.jjl.shotrlink.admin.common.serialize.PhoneDesensitizationSerializer;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class UserRespDto {
     /**
