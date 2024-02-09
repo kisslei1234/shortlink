@@ -8,14 +8,17 @@ import com.jjl.shotrlink.admin.common.biz.user.UserContext;
 import com.jjl.shotrlink.admin.convention.exception.ClientException;
 import com.jjl.shotrlink.admin.dao.entity.GroupDO;
 import com.jjl.shotrlink.admin.dao.mapper.GroupMapper;
+import com.jjl.shotrlink.admin.dto.req.GroupUpdateReqDto;
 import com.jjl.shotrlink.admin.dto.resp.GroupQueryRespDto;
 import com.jjl.shotrlink.admin.service.GroupService;
 import com.jjl.shotrlink.admin.util.RandomGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
     @Override
     public void createGroup(String groupName) {
@@ -37,5 +40,15 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     public List<GroupQueryRespDto> getGroups() {
         LambdaQueryWrapper<GroupDO> doLambdaQueryWrapper = Wrappers.<GroupDO>lambdaQuery().eq(GroupDO::getUsername, UserContext.getUsername());
         return BeanUtil.copyToList(baseMapper.selectList(doLambdaQueryWrapper), GroupQueryRespDto.class);
+    }
+
+    @Override
+    public void updateGroup(GroupUpdateReqDto groupUpdateReqDto) {
+        if (baseMapper.update(GroupDO.builder().name(groupUpdateReqDto.getName()).build(), Wrappers.<GroupDO>lambdaUpdate()
+                .eq(GroupDO::getGid, groupUpdateReqDto.getGid())
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)) < 1) {
+            throw new ClientException("更新失败");
+        }
     }
 }

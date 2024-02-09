@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +20,7 @@ import static com.jjl.shotrlink.admin.common.constant.RedisCacheConstant.LOGIN_P
  * 用户信息传输过滤器
  */
 @RequiredArgsConstructor
+@Slf4j
 public class UserTransmitFilter implements Filter {
     private final StringRedisTemplate stringRedisTemplate;
 
