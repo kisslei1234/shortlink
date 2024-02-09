@@ -104,4 +104,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     public Boolean checkLogin(String token, String username) {
         return stringRedisTemplate.hasKey(LOGIN_PREFIX + username);
     }
+
+    @Override
+    public void logout(String token, String username) {
+        if (ObjectUtil.equal(Boolean.FALSE, checkLogin(token, username))) {
+            throw new ClientException("用户未登录");
+        }
+        stringRedisTemplate.delete(LOGIN_PREFIX + username);
+    }
 }
