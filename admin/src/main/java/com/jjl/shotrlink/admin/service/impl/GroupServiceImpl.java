@@ -38,7 +38,9 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public List<GroupQueryRespDto> getGroups() {
-        LambdaQueryWrapper<GroupDO> doLambdaQueryWrapper = Wrappers.<GroupDO>lambdaQuery().eq(GroupDO::getUsername, UserContext.getUsername());
+        LambdaQueryWrapper<GroupDO> doLambdaQueryWrapper = Wrappers.<GroupDO>lambdaQuery()
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0);
         return BeanUtil.copyToList(baseMapper.selectList(doLambdaQueryWrapper), GroupQueryRespDto.class);
     }
 
@@ -49,6 +51,16 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .eq(GroupDO::getDelFlag, 0)) < 1) {
             throw new ClientException("更新失败");
+        }
+    }
+
+    @Override
+    public void deleteGroup(String gid) {
+        if (baseMapper.update(GroupDO.builder().delFlag(1).build(), Wrappers.<GroupDO>lambdaUpdate()
+                .eq(GroupDO::getGid, gid)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)) < 1) {
+            throw new ClientException("删除失败");
         }
     }
 }
