@@ -3,22 +3,27 @@ package com.jjl.shotrlink.admin.dao.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jjl.shotrlink.admin.common.database.BaseDO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 /**
  * @description t_group
  * @date 2024-02-09
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @TableName("t_group")
-public class GroupDO {
+public class GroupDO extends BaseDO {
 
-    @TableId(type = IdType.AUTO)
     /**
     * id
     */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -41,15 +46,6 @@ public class GroupDO {
     */
     private Integer sortOrder;
 
-    /**
-    * 创建时间
-    */
-    private LocalDateTime createTime;
-
-    /**
-    * 修改时间
-    */
-    private LocalDateTime updateTime;
 
     /**
     * 删除标识 0：未删除 1：已删除
