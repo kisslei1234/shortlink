@@ -3,10 +3,10 @@ package com.jjl.shortlink.project.common.web;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import com.jjl.shotrlink.admin.convention.errorcode.BaseErrorCode;
-import com.jjl.shotrlink.admin.convention.exception.AbstractException;
-import com.jjl.shotrlink.admin.convention.result.Result;
-import com.jjl.shotrlink.admin.convention.result.Results;
+import com.jjl.shortlink.project.common.convention.errorcode.BaseErrorCode;
+import com.jjl.shortlink.project.common.convention.exception.AbstractException;
+import com.jjl.shortlink.project.common.convention.result.Result;
+import com.jjl.shortlink.project.common.convention.result.Results;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
