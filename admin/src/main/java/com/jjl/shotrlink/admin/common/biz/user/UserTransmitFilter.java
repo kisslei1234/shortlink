@@ -30,8 +30,8 @@ public class UserTransmitFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // 添加需要排除的URL
-        excludedUrls.add("/api/short-link/v1/user/register");
-        excludedUrls.add("/api/short-link/v1/user/login");
+        excludedUrls.add("/api/short-link/admin/v1/user/register");
+        excludedUrls.add("/api/short-link/admin/v1/user/login");
     }
 
     @Override
