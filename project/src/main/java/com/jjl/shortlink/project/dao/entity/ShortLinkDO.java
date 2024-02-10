@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jjl.shortlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @TableName("t_link")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ShortLinkDO extends BaseDO {
 
 
@@ -53,7 +55,7 @@ public class ShortLinkDO extends BaseDO {
     /**
     * 启用标识，0：启用，1：不启用
     */
-    private int enableStatus;
+    private Integer enableStatus;
 
     /**
     * 分组id
@@ -68,12 +70,12 @@ public class ShortLinkDO extends BaseDO {
     /**
     * 创建类型，0:接口创建，1：控制台创建
     */
-    private int createdType;
+    private Integer createdType;
 
     /**
     * 有效期类型，0：永久有效，1：自定义
     */
-    private int vaildDateType;
+    private Integer vaildDateType;
 
     /**
     * 有效期
@@ -89,7 +91,7 @@ public class ShortLinkDO extends BaseDO {
     /**
     * 删除标识，0:未删除，1:已删除
     */
-    private int delFlag;
+    private Integer delFlag;
     /*
     * 网站图标
     * */

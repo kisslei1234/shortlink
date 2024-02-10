@@ -33,7 +33,6 @@ public class GroupController {
     }
     @PutMapping("/api/short-link/admin/v1/group")
     public Result<Void> updateGroup(@RequestBody @Valid GroupUpdateReqDto groupUpdateReqDto) {
-        log.info("当前线程id: {}", Thread.currentThread().getId());
         groupService.updateGroup(groupUpdateReqDto);
         return Results.success();
     }
