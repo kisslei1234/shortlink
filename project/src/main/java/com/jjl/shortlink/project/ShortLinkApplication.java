@@ -1,11 +1,11 @@
-package com.jjl.shotrlink.admin;
+package com.jjl.shortlink.project;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.jjl.shotrlink.admin.dao.mapper")
+@MapperScan("com.jjl.shortlink.project.dao.mapper")
 public class ShortLinkApplication {
     public static void main(String[] args) {
         SpringApplication.run(ShortLinkApplication.class, args);
