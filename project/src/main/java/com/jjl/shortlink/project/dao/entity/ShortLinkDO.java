@@ -90,4 +90,8 @@ public class ShortLinkDO extends BaseDO {
     * 删除标识，0:未删除，1:已删除
     */
     private int delFlag;
+    /*
+    * 网站图标
+    * */
+    private String favicon;
 }
