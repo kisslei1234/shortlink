@@ -2,12 +2,14 @@ package com.jjl.shotrlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jjl.shotrlink.admin.common.biz.user.UserContext;
 import com.jjl.shotrlink.admin.convention.exception.ClientException;
 import com.jjl.shotrlink.admin.dao.entity.GroupDO;
 import com.jjl.shotrlink.admin.dao.mapper.GroupMapper;
+import com.jjl.shotrlink.admin.dto.req.GroupSortReqDto;
 import com.jjl.shotrlink.admin.dto.req.GroupUpdateReqDto;
 import com.jjl.shotrlink.admin.dto.resp.GroupQueryRespDto;
 import com.jjl.shotrlink.admin.service.GroupService;
@@ -40,7 +42,8 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     public List<GroupQueryRespDto> getGroups() {
         LambdaQueryWrapper<GroupDO> doLambdaQueryWrapper = Wrappers.<GroupDO>lambdaQuery()
                 .eq(GroupDO::getUsername, UserContext.getUsername())
-                .eq(GroupDO::getDelFlag, 0);
+                .eq(GroupDO::getDelFlag, 0)
+                .orderByAsc(GroupDO::getSortOrder);
         return BeanUtil.copyToList(baseMapper.selectList(doLambdaQueryWrapper), GroupQueryRespDto.class);
     }
 
@@ -62,5 +65,19 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getDelFlag, 0)) < 1) {
             throw new ClientException("删除失败");
         }
+    }
+
+    @Override
+    public void sortGroup(List<GroupSortReqDto> groupSortReqDtos) {
+        groupSortReqDtos.forEach(e ->{
+            GroupDO groupDO = GroupDO.builder().sortOrder(e.getSortOrder()).build();
+            LambdaUpdateWrapper<GroupDO> wrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                    .eq(GroupDO::getUsername, UserContext.getUsername())
+                    .eq(GroupDO::getGid, e.getGid())
+                    .eq(GroupDO::getDelFlag, 0);
+            if (baseMapper.update(groupDO,wrapper) < 1){
+                throw new ClientException("排序失败");
+            }
+        });
     }
 }

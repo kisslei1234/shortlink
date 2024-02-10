@@ -1,6 +1,5 @@
 package com.jjl.shotrlink.admin.dao.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jjl.shotrlink.admin.common.database.BaseDO;
@@ -23,7 +22,7 @@ public class GroupDO extends BaseDO {
     /**
     * id
     */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**

@@ -21,35 +21,35 @@ public class UserController {
      * @param username
      * @return
      */
-    @GetMapping("/api/short-link/v1/user/{username}")
+    @GetMapping("/api/short-link/admin/v1/user/{username}")
     public Result<UserRespDto> getUserByUsername(@PathVariable("username") String username) {
         return Results.success(userService.getUserByUsername(username));
     }
-    @GetMapping("/api/short-link/v1/user/has-username/{username}")
+    @GetMapping("/api/short-link/admin/v1/user/has-username/{username}")
     public Result<Boolean> hasUserByUsername(@PathVariable("username") String username) {
         return userService.hasUserByUsername(username) ? Results.success(true) : Results.success(false);
     }
-    @PostMapping("/api/short-link/v1/user")
+    @PostMapping("/api/short-link/admin/v1/user")
     public Result<Void> registerUser(@RequestBody @Valid UserRegisterDto userRegisterDto) {
         userService.registerUser(userRegisterDto);
         return Results.success();
     }
-    @PutMapping("/api/short-link/v1/user")
+    @PutMapping("/api/short-link/admin/v1/user")
     public Result<Void> update(@RequestBody UserUpdateDto userUpdateDto){
         userService.update(userUpdateDto);
         return Results.success();
     }
     /*用户登录*/
-    @PostMapping("/api/short-link/v1/user/login")
+    @PostMapping("/api/short-link/admin/v1/user/login")
     public Result<UserLoginRespDto> login(@RequestBody@Valid UserLoginReqDto userLoginReqDto){
         UserLoginRespDto userLoginRespDto = userService.login(userLoginReqDto);
         return Results.success(userLoginRespDto);
     }
-    @GetMapping("/api/short-link/v1/user/check-login")
+    @GetMapping("/api/short-link/admin/v1/user/check-login")
     public Result<Boolean> checkLogin(@RequestParam("token") String token,@RequestParam("username") String username){
         return Results.success(userService.checkLogin(token,username));
     }
-    @PostMapping("/api/short-link/v1/user/logout")
+    @DeleteMapping("/api/short-link/admin/v1/user/logout")
     public Result<Void> logout(@RequestParam("token") String token, @RequestParam("username") String username){
         userService.logout(token,username);
         return Results.success();

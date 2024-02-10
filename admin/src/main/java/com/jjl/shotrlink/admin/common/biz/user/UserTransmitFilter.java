@@ -1,7 +1,7 @@
 package com.jjl.shotrlink.admin.common.biz.user;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
+import com.jjl.shotrlink.admin.convention.exception.ClientException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -48,14 +48,16 @@ public class UserTransmitFilter implements Filter {
 
             String token = httpServletRequest.getHeader("token");
             if (!StringUtils.hasText(token)) {
-                return;
+                throw new ClientException("请先登录");
             }
             String userName = httpServletRequest.getHeader("username");
-            UserInfoDTO userInfoDTO = JSON.parseObject(Objects.requireNonNull(stringRedisTemplate.opsForHash().get(LOGIN_PREFIX + userName, token)).toString(), UserInfoDTO.class);
-            if (ObjectUtil.isNotEmpty(userInfoDTO)) {
-                UserContext.setUser(userInfoDTO);
-                filterChain.doFilter(servletRequest, servletResponse);
+            Object userJson = stringRedisTemplate.opsForHash().get(LOGIN_PREFIX + userName, token);
+            if (Objects.isNull(userJson)) {
+                throw new ClientException("请先登录");
             }
+            UserInfoDTO userInfoDTO = JSON.parseObject(userJson.toString(), UserInfoDTO.class);
+            UserContext.setUser(userInfoDTO);
+                filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             UserContext.removeUser();
         }
