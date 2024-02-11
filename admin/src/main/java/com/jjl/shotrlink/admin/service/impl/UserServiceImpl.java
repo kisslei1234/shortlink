@@ -16,6 +16,7 @@ import com.jjl.shotrlink.admin.dto.req.UserRegisterDto;
 import com.jjl.shotrlink.admin.dto.req.UserUpdateDto;
 import com.jjl.shotrlink.admin.dto.resp.UserLoginRespDto;
 import com.jjl.shotrlink.admin.dto.resp.UserRespDto;
+import com.jjl.shotrlink.admin.service.GroupService;
 import com.jjl.shotrlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
@@ -37,6 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RBloomFilter<String> rBloomFilter;
     private final RedissonClient redisson;
     private final StringRedisTemplate stringRedisTemplate;
+    private final GroupService groupService;
 
     @Override
     public UserRespDto getUserByUsername(String username) {
@@ -63,6 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 BeanUtils.copyProperties(userRegisterDto, userDO);
                 this.save(userDO);
                 rBloomFilter.add(userRegisterDto.getUsername());
+                groupService.createGroup("默认分组");
             } else {
                 throw new ClientException(USER_NAME_EXIST_ERROR);
             }
