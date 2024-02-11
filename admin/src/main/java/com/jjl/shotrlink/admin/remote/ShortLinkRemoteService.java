@@ -5,11 +5,13 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jjl.shotrlink.admin.convention.result.Result;
+import com.jjl.shotrlink.admin.dto.resp.ShortLinkCountQueryRespDTO;
 import com.jjl.shotrlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.jjl.shotrlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -30,5 +32,14 @@ public class ShortLinkRemoteService {
         });
     }
 
-
+    /*
+     * 查询分组短链接总量
+     * */
+    public Result<List<ShortLinkCountQueryRespDTO>> listGroupShortLinkCount(List<String> gidList) {
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("gid", gidList);
+        String resultPageStr = HttpUtil.get("http://localhost:8001/api/short-link/v1/count", requestMap);
+        resultPageStr = resultPageStr.replace("\\", "");
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+    }
 }

@@ -31,4 +31,9 @@ public class GroupQueryRespDto {
      * 分组排序
      */
     private Integer sortOrder;
+    /*
+     * 分组数量
+     * */
+    private Integer shortLinkCount;
+
 }

@@ -7,21 +7,30 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jjl.shotrlink.admin.common.biz.user.UserContext;
 import com.jjl.shotrlink.admin.convention.exception.ClientException;
+import com.jjl.shotrlink.admin.convention.result.Result;
 import com.jjl.shotrlink.admin.dao.entity.GroupDO;
 import com.jjl.shotrlink.admin.dao.mapper.GroupMapper;
 import com.jjl.shotrlink.admin.dto.req.GroupSortReqDto;
 import com.jjl.shotrlink.admin.dto.req.GroupUpdateReqDto;
 import com.jjl.shotrlink.admin.dto.resp.GroupQueryRespDto;
+import com.jjl.shotrlink.admin.dto.resp.ShortLinkCountQueryRespDTO;
+import com.jjl.shotrlink.admin.remote.ShortLinkRemoteService;
 import com.jjl.shotrlink.admin.service.GroupService;
 import com.jjl.shotrlink.admin.util.RandomGenerator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
+    private final ShortLinkRemoteService shortLinkRemoteService;
+
     @Override
     public void createGroup(String groupName) {
         String gid = RandomGenerator.generateRandom();
@@ -44,7 +53,18 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .eq(GroupDO::getDelFlag, 0)
                 .orderByAsc(GroupDO::getSortOrder);
-        return BeanUtil.copyToList(baseMapper.selectList(doLambdaQueryWrapper), GroupQueryRespDto.class);
+        List<GroupDO> groupDOList = baseMapper.selectList(doLambdaQueryWrapper);
+        List<String> stringList = groupDOList
+                .stream()
+                .map(GroupDO::getGid).toList();
+        Result<List<ShortLinkCountQueryRespDTO>> listResult = shortLinkRemoteService.listGroupShortLinkCount(stringList);
+        List<ShortLinkCountQueryRespDTO> data = listResult.getData();
+        Map<String, Integer> collect = data.stream().collect(Collectors.toMap(ShortLinkCountQueryRespDTO::getGid, ShortLinkCountQueryRespDTO::getShortLinkCount));
+        List<GroupQueryRespDto> groupQueryRespDtos = BeanUtil.copyToList(groupDOList, GroupQueryRespDto.class);
+        groupQueryRespDtos.forEach(e -> {
+            e.setShortLinkCount(collect.get(e.getGid()) == null ? 0 : collect.get(e.getGid()));
+        });
+        return groupQueryRespDtos;
     }
 
     @Override
@@ -69,13 +89,13 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void sortGroup(List<GroupSortReqDto> groupSortReqDtos) {
-        groupSortReqDtos.forEach(e ->{
+        groupSortReqDtos.forEach(e -> {
             GroupDO groupDO = GroupDO.builder().sortOrder(e.getSortOrder()).build();
             LambdaUpdateWrapper<GroupDO> wrapper = Wrappers.lambdaUpdate(GroupDO.class)
                     .eq(GroupDO::getUsername, UserContext.getUsername())
                     .eq(GroupDO::getGid, e.getGid())
                     .eq(GroupDO::getDelFlag, 0);
-            if (baseMapper.update(groupDO,wrapper) < 1){
+            if (baseMapper.update(groupDO, wrapper) < 1) {
                 throw new ClientException("排序失败");
             }
         });
