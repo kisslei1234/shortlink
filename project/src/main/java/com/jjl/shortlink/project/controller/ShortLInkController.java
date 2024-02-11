@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /*
@@ -25,8 +26,9 @@ import java.util.List;
 public class ShortLInkController {
     private final ShortLinkService shortLinkService;
     @GetMapping("/{short-uri}")
-    public Result<Void> redirect(@PathVariable("short-uri") String shortUri, HttpServletRequest request, HttpServletResponse response) {
+    public Result<Void> redirect(@PathVariable("short-uri") String shortUri, HttpServletRequest request, HttpServletResponse response) throws IOException {
         shortLinkService.restoreUrl(shortUri,request, response);
+        return Results.success();
     }
 
     @PostMapping("/api/short-link/v1/create")
