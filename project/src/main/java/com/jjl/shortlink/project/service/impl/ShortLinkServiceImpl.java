@@ -133,45 +133,47 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         String serverName = request.getServerName();
         String fullShortUrl = serverName + "/" + shortUri;
         String originalLink = stringRedisTemplate.opsForValue().get(String.format(SHORT_LINK_GOTO, fullShortUrl));
-        if (StrUtil.isBlank(originalLink)) {
-            RLock lock = redissonClient.getLock(StrUtil.format(SHORT_LINK_GOTO_LOCK, fullShortUrl));
-            lock.lock();
-            try {
-                originalLink = stringRedisTemplate.opsForValue().get(String.format(SHORT_LINK_GOTO, fullShortUrl));
-                if (StrUtil.isNotBlank(originalLink)) {
-                    response.sendRedirect(originalLink);
-                    return;
-                }
-                //查询数据库
-                LambdaQueryWrapper<ShortLInkGotoDO> wrapper = Wrappers.lambdaQuery(ShortLInkGotoDO.class)
-                        .eq(ShortLInkGotoDO::getFullShortUrl, fullShortUrl);
-                ShortLInkGotoDO shortLInkGotoDO = shortLinkGotoMapper.selectOne(wrapper);
-                //短链接不存在
-                if (ObjectUtil.isEmpty(shortLInkGotoDO)) {
-                    throw new ServiceException("短链接不存在");
-                }
-                LambdaQueryWrapper<ShortLinkDO> eq = Wrappers.lambdaQuery(ShortLinkDO.class)
-                        .eq(ShortLinkDO::getGid, shortLInkGotoDO.getGid())
-                        .eq(ShortLinkDO::getFullShortUrl, fullShortUrl)
-                        .eq(ShortLinkDO::getDelFlag, 0)
-                        .eq(ShortLinkDO::getEnableStatus, 0);
-                ShortLinkDO shortLinkDO = baseMapper.selectOne(eq);
-                if (ObjectUtil.isEmpty(shortLinkDO)) {
-                    throw new ServiceException("短链接不存在");
-                }
-                if (ObjectUtil.equal(shortLinkDO.getEnableStatus(), 1)) {
-                    throw new ServiceException("短链接已失效");
-                }
-                originalLink = shortLinkDO.getOriginUrl();
-                stringRedisTemplate.opsForValue().set(String.format(SHORT_LINK_GOTO, fullShortUrl), originalLink);
+        if (StrUtil.isNotBlank(originalLink)) {
+            response.sendRedirect(originalLink);
+            return;
+        }
+        RLock lock = redissonClient.getLock(String.format(SHORT_LINK_GOTO_LOCK, fullShortUrl));
+        lock.lock();
+        try {
+            originalLink = stringRedisTemplate.opsForValue().get(String.format(SHORT_LINK_GOTO, fullShortUrl));
+            if (StrUtil.isNotBlank(originalLink)) {
                 response.sendRedirect(originalLink);
-            } finally {
-                lock.unlock();
+                return;
             }
-
+            //查询数据库
+            LambdaQueryWrapper<ShortLInkGotoDO> wrapper = Wrappers.lambdaQuery(ShortLInkGotoDO.class)
+                    .eq(ShortLInkGotoDO::getFullShortUrl, fullShortUrl);
+            ShortLInkGotoDO shortLInkGotoDO = shortLinkGotoMapper.selectOne(wrapper);
+            //短链接不存在
+            if (ObjectUtil.isEmpty(shortLInkGotoDO)) {
+                throw new ServiceException("短链接不存在");
+            }
+            LambdaQueryWrapper<ShortLinkDO> eq = Wrappers.lambdaQuery(ShortLinkDO.class)
+                    .eq(ShortLinkDO::getGid, shortLInkGotoDO.getGid())
+                    .eq(ShortLinkDO::getFullShortUrl, fullShortUrl)
+                    .eq(ShortLinkDO::getDelFlag, 0)
+                    .eq(ShortLinkDO::getEnableStatus, 0);
+            ShortLinkDO shortLinkDO = baseMapper.selectOne(eq);
+            if (ObjectUtil.isEmpty(shortLinkDO)) {
+                throw new ServiceException("短链接不存在");
+            }
+            if (ObjectUtil.equal(shortLinkDO.getEnableStatus(), 1)) {
+                throw new ServiceException("短链接已失效");
+            }
+            originalLink = shortLinkDO.getOriginUrl();
+            stringRedisTemplate.opsForValue().set(String.format(SHORT_LINK_GOTO, fullShortUrl), originalLink);
+            response.sendRedirect(originalLink);
+        } finally {
+            lock.unlock();
         }
 
     }
+
 
     private String generateSuffix(ShortLinkCreateReqDTO shortLinkCreateReqDTO) {
         int count = 0;
