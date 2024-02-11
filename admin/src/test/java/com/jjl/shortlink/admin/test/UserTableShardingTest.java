@@ -23,8 +23,9 @@ public class UserTableShardingTest {
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;";
 
     public static void main(String[] args) {
-        for (int i = 0;i<5;i++){
-            System.out.printf((SQL) + "%n",i);
-        }
+        String teststr = "{\"code\":\"0\",\"message\":\"操作成功\",\"data\":[{\"gid\":\"2\",\"shortLinkCount\":4},{\"gid\":\"4\",\"shortLinkCount\":13},{\"gid\":\"8\",\"shortLinkCount\":3}],\"requestId\":null,\"success\":true}";
+        teststr = teststr.replace("\\", "");
+        System.out.println(teststr);
+
     }
 }

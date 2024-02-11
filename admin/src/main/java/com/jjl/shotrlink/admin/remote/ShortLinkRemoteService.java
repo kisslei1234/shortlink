@@ -4,6 +4,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
 import com.jjl.shotrlink.admin.convention.result.Result;
 import com.jjl.shotrlink.admin.dto.resp.ShortLinkCountQueryRespDTO;
 import com.jjl.shotrlink.admin.remote.dto.req.ShortLinkPageReqDTO;
@@ -40,6 +41,11 @@ public class ShortLinkRemoteService {
         requestMap.put("gid", gidList);
         String resultPageStr = HttpUtil.get("http://localhost:8001/api/short-link/v1/count", requestMap);
         resultPageStr = resultPageStr.replace("\\", "");
-        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {
+        });
+    }
+
+    public void updateShortLink(ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
+        HttpUtil.post("http://localhost:8001/api/short-link/v1/update", JSON.toJSONString(shortLInkUpdateReqDTO));
     }
 }

@@ -4,12 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jjl.shortlink.project.common.convention.exception.ServiceException;
+import com.jjl.shortlink.project.common.enums.VailDateTypeEnum;
 import com.jjl.shortlink.project.dao.entity.ShortLinkDO;
 import com.jjl.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.jjl.shortlink.project.dto.resp.ShortLinkCountQueryRespDTO;
@@ -17,10 +20,14 @@ import com.jjl.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.jjl.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.jjl.shortlink.project.service.ShortLinkService;
 import com.jjl.shortlink.project.utils.HashUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yaml.snakeyaml.constructor.DuplicateKeyException;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,6 +80,39 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .map(e -> BeanUtil.toBean(e, ShortLinkCountQueryRespDTO.class))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Void updateShortLink(ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
+        LambdaQueryWrapper<ShortLinkDO> lambdaQueryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                .eq(ShortLinkDO::getFullShortUrl, shortLInkUpdateReqDTO.getFullShortUrl())
+                .eq(ShortLinkDO::getDelFlag, 0)
+                .eq(ShortLinkDO::getEnableStatus, 0);
+        ShortLinkDO hasShortLinkDO = baseMapper.selectOne(lambdaQueryWrapper);
+        if (ObjectUtil.isEmpty(hasShortLinkDO)) {
+            throw new ServiceException("短链接不存在");
+        }
+        if (ObjectUtil.equal(hasShortLinkDO.getGid(),shortLInkUpdateReqDTO.getGid())) {
+            BeanUtil.copyProperties(shortLInkUpdateReqDTO, hasShortLinkDO);
+            LambdaUpdateWrapper<ShortLinkDO> set = Wrappers.lambdaUpdate(ShortLinkDO.class)
+                    .eq(ShortLinkDO::getGid, shortLInkUpdateReqDTO.getGid())
+                    .eq(ShortLinkDO::getFullShortUrl, shortLInkUpdateReqDTO.getFullShortUrl())
+                    .eq(ShortLinkDO::getDelFlag, 0)
+                    .eq(ShortLinkDO::getEnableStatus, 0)
+                    .set(ObjectUtil.equals(shortLInkUpdateReqDTO.getValidDateType(), VailDateTypeEnum.PERMANENT.getType()), ShortLinkDO::getVaildDate, null);
+            baseMapper.update(hasShortLinkDO, set);
+        } else {
+            baseMapper.deleteById(hasShortLinkDO);
+            BeanUtil.copyProperties(shortLInkUpdateReqDTO, hasShortLinkDO);
+            if(ObjectUtil.equal(shortLInkUpdateReqDTO.getValidDateType(),VailDateTypeEnum.PERMANENT.getType())){
+                hasShortLinkDO.setVaildDate(null);
+            }
+            baseMapper.insert(hasShortLinkDO);
+        }
+        return null;
+    }
+
+
 
     private String generateSuffix(ShortLinkCreateReqDTO shortLinkCreateReqDTO) {
         int count = 0;
