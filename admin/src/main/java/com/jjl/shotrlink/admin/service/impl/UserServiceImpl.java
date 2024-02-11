@@ -65,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 BeanUtils.copyProperties(userRegisterDto, userDO);
                 this.save(userDO);
                 rBloomFilter.add(userRegisterDto.getUsername());
-                groupService.createGroup("默认分组");
+                groupService.createGroup("默认分组", userRegisterDto.getUsername());
             } else {
                 throw new ClientException(USER_NAME_EXIST_ERROR);
             }

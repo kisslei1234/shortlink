@@ -33,12 +33,17 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void createGroup(String groupName) {
+    createGroup(groupName, UserContext.getUsername());
+    }
+
+    @Override
+    public void createGroup(String groupName, String username) {
         String gid = RandomGenerator.generateRandom();
         while (baseMapper.selectById(gid) != null) {
             gid = RandomGenerator.generateRandom();
         }
         GroupDO groupDO = GroupDO.builder().gid(gid)
-                .username(UserContext.getUsername())
+                .username(username)
                 .name(groupName)
                 .sortOrder(0)
                 .build();
