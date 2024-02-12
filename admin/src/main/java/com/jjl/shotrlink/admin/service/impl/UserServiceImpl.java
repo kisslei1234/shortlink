@@ -99,7 +99,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException("用户已登录");
         }
         stringRedisTemplate.opsForHash().put(LOGIN_PREFIX + userLoginReqDto.getUsername(), token, JSONUtil.toJsonStr(userDO));
-        stringRedisTemplate.expire(LOGIN_PREFIX + userLoginReqDto.getUsername(), 30L, TimeUnit.MINUTES);
+        stringRedisTemplate.expire(LOGIN_PREFIX + userLoginReqDto.getUsername(), 30L, TimeUnit.DAYS);
         return UserLoginRespDto.builder().token(token).build();
     }
 
