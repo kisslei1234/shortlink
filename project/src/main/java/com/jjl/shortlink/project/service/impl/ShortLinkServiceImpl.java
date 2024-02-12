@@ -141,6 +141,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             return;
         }
         if (ObjectUtil.equals(Boolean.FALSE, shortUriCreateCachePenetrationBloomFilter.contains(fullShortUrl))) {
+            response.sendRedirect("/page/notfound");
             return;
         }
         String nullUrl = stringRedisTemplate.opsForValue().get(String.format(SHORT_LINK_GOTO_ISNULL, fullShortUrl));
@@ -162,7 +163,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             //短链接不存在
             if (ObjectUtil.isEmpty(shortLInkGotoDO)) {
                 stringRedisTemplate.opsForValue().set(String.format(SHORT_LINK_GOTO, fullShortUrl), "-", 30, TimeUnit.MINUTES);
-                throw new ServiceException("短链接不存在");
+                response.sendRedirect("/page/notfound");
             }
             LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, shortLInkGotoDO.getGid())
@@ -170,15 +171,15 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .eq(ShortLinkDO::getDelFlag, 0);
             ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
             if (ObjectUtil.isEmpty(shortLinkDO)) {
-                throw new ServiceException("短链接不存在");
+                response.sendRedirect("/page/notfound");
             }
             if (ObjectUtil.equal(shortLinkDO.getEnableStatus(), 1)) {
-                throw new ServiceException("短链接已失效");
+                response.sendRedirect("/page/notfound");
             }
             if (shortLinkDO.getValidDate() != null && shortLinkDO.getValidDate().isBefore(LocalDateTime.now())) {
                 shortLinkDO.setEnableStatus(1);
                 baseMapper.updateById(shortLinkDO);
-                throw new ServiceException("短链接已失效");
+                response.sendRedirect("/page/notfound");
             }
             originalLink = shortLinkDO.getOriginUrl();
             stringRedisTemplate.opsForValue().setIfAbsent(String.format(SHORT_LINK_GOTO, fullShortUrl), originalLink, LinkUtil.getLinkCacheValidDate(shortLinkDO.getValidDate()), TimeUnit.SECONDS);
