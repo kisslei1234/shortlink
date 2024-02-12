@@ -8,5 +8,6 @@ public class RedisKeyConstant {
     * */
     public static final String SHORT_LINK_GOTO = "short_link_goto_%s";
     public static final String SHORT_LINK_GOTO_LOCK = "short_link_goto_lock_%s";
+    public static final String SHORT_LINK_GOTO_ISNULL = "short_link_goto_isnull_%s";
 
 }
