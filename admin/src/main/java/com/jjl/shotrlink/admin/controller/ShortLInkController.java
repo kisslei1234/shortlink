@@ -25,6 +25,7 @@ public class ShortLInkController {
     public Result<IPage<ShortLinkPageRespDTO>> page(ShortLinkPageReqDTO shortLinkPageReqDTO) {
         return shortLinkRemoteService.pageShortLink(shortLinkPageReqDTO);
     }
+
     @PostMapping("/api/short-link/admin/v1/update")
     public com.jjl.shortlink.project.common.convention.result.Result<Void> updateShortLink(@RequestBody ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
         shortLinkRemoteService.updateShortLink(shortLInkUpdateReqDTO);

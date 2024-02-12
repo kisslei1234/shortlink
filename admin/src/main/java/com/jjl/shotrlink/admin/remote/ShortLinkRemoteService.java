@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
 import com.jjl.shotrlink.admin.convention.result.Result;
 import com.jjl.shotrlink.admin.dto.resp.ShortLinkCountQueryRespDTO;
+import com.jjl.shotrlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
 import com.jjl.shotrlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.jjl.shotrlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import org.springframework.stereotype.Component;
@@ -47,5 +48,9 @@ public class ShortLinkRemoteService {
 
     public void updateShortLink(ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
         HttpUtil.post("http://localhost:8001/api/short-link/v1/update", JSON.toJSONString(shortLInkUpdateReqDTO));
+    }
+
+    public void saveRecycleBin(RecycleBinSaveReqDTO requestParam) {
+        HttpUtil.post("http://localhost:8001/api/short-link/v1/recycle-bin/save", JSON.toJSONString(requestParam));
     }
 }
