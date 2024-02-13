@@ -1,10 +1,10 @@
 package com.jjl.shotrlink.admin.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jjl.shortlink.project.common.convention.result.Results;
-import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
 import com.jjl.shotrlink.admin.convention.result.Result;
+import com.jjl.shotrlink.admin.convention.result.Results;
 import com.jjl.shotrlink.admin.remote.ShortLinkRemoteService;
+import com.jjl.shotrlink.admin.remote.dto.req.ShortLInkUpdateReqDTO;
 import com.jjl.shotrlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.jjl.shotrlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ShortLInkController {
     }
 
     @PostMapping("/api/short-link/admin/v1/update")
-    public com.jjl.shortlink.project.common.convention.result.Result<Void> updateShortLink(@RequestBody ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
+    public Result<Void> updateShortLink(@RequestBody ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
         shortLinkRemoteService.updateShortLink(shortLInkUpdateReqDTO);
         return Results.success();
     }

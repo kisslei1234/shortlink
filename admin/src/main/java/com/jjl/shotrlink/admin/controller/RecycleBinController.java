@@ -17,11 +17,15 @@
 
 package com.jjl.shotrlink.admin.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jjl.shotrlink.admin.convention.result.Result;
 import com.jjl.shotrlink.admin.convention.result.Results;
 import com.jjl.shotrlink.admin.remote.ShortLinkRemoteService;
 import com.jjl.shotrlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
+import com.jjl.shotrlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
+import com.jjl.shotrlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,5 +47,10 @@ public class RecycleBinController {
         shortLinkRemoteService.saveRecycleBin(requestParam);
         return Results.success();
     }
+    @GetMapping("/api/short-link/admin/v1/recycle-bin/page")
+    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
+        return Results.success(shortLinkRemoteService.pageShortLink(requestParam));
+    }
+
 
 }

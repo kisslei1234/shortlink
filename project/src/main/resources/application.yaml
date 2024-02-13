@@ -5,6 +5,10 @@ spring:
     view:
       prefix: /templates/
       suffix: .html
+  short-link:
+    stats:
+      locale:
+        amap-key: f440e8153ca04dd6b42399bcaf6ce99d
   datasource:
     # ShardingSphere 对 Driver 自定义，实现分库分表等隐藏逻辑
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver

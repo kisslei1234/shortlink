@@ -1,5 +1,9 @@
 package com.jjl.shotrlink.admin.common.biz.user;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
+import com.jjl.shotrlink.admin.convention.exception.ClientException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +13,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jjl.shotrlink.admin.common.constant.RedisCacheConstant.LOGIN_PREFIX;
+import static com.jjl.shotrlink.admin.common.enums.UserErrorCodeEnum.USER_TOKEN_FAIL;
 
 /**
  * 用户信息传输过滤器
@@ -34,27 +41,25 @@ public class UserTransmitFilter implements Filter {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             String requestUrl = httpServletRequest.getRequestURI();
-            UserContext.setUser(new UserInfoDTO("2141","admin","fqy"));
-            filterChain.doFilter(servletRequest, servletResponse);
             // 检查请求的URL是否需要排除
-//            if (isExcludedUrl(requestUrl)) {
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            }
-//
-//            String token = httpServletRequest.getHeader("token");
-//            String userName = httpServletRequest.getHeader("username");
-//            if (!StrUtil.isAllNotBlank(token, userName)) {
-//                throw new ClientException(USER_TOKEN_FAIL);
-//            }
-//            Object userJsonObject = stringRedisTemplate.opsForHash().get(LOGIN_PREFIX + userName, token);
-//            if (ObjectUtil.isNull(userJsonObject)) {
-//                throw new ClientException(USER_TOKEN_FAIL);
-//            }
-//            UserInfoDTO userInfoDTO;
-//            userInfoDTO = JSON.parseObject(userJsonObject.toString(), UserInfoDTO.class);
-//            UserContext.setUser(userInfoDTO);
-//            filterChain.doFilter(servletRequest, servletResponse);
+            if (isExcludedUrl(requestUrl)) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+
+            String token = httpServletRequest.getHeader("token");
+            String userName = httpServletRequest.getHeader("username");
+            if (!StrUtil.isAllNotBlank(token, userName)) {
+                throw new ClientException(USER_TOKEN_FAIL);
+            }
+            Object userJsonObject = stringRedisTemplate.opsForHash().get(LOGIN_PREFIX + userName, token);
+            if (ObjectUtil.isNull(userJsonObject)) {
+                throw new ClientException(USER_TOKEN_FAIL);
+            }
+            UserInfoDTO userInfoDTO;
+            userInfoDTO = JSON.parseObject(userJsonObject.toString(), UserInfoDTO.class);
+            UserContext.setUser(userInfoDTO);
+            filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             UserContext.removeUser();
         }
