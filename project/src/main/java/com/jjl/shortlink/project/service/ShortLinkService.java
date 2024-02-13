@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jjl.shortlink.project.dao.entity.ShortLinkDO;
 import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
+import com.jjl.shortlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.jjl.shortlink.project.dto.resp.ShortLinkBatchCreateRespDTO;
 import com.jjl.shortlink.project.dto.resp.ShortLinkCountQueryRespDTO;
 import com.jjl.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.jjl.shortlink.project.dto.resp.ShortLinkPageRespDTO;
@@ -25,4 +27,11 @@ public interface ShortLinkService  extends IService<ShortLinkDO> {
     Void updateShortLink(ShortLInkUpdateReqDTO shortLInkUpdateReqDTO);
 
     void restoreUrl(String shortUri, HttpServletRequest request, HttpServletResponse response) throws IOException;
+    /**
+     * 批量创建短链接
+     *
+     * @param requestParam 批量创建短链接请求参数
+     * @return 批量创建短链接返回参数
+     */
+    ShortLinkBatchCreateRespDTO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam);
 }

@@ -20,11 +20,10 @@ import com.jjl.shortlink.project.common.enums.VailDateTypeEnum;
 import com.jjl.shortlink.project.dao.entity.*;
 import com.jjl.shortlink.project.dao.mapper.*;
 import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
+import com.jjl.shortlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
-import com.jjl.shortlink.project.dto.resp.ShortLinkCountQueryRespDTO;
-import com.jjl.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
-import com.jjl.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+import com.jjl.shortlink.project.dto.resp.*;
 import com.jjl.shortlink.project.service.ShortLinkService;
 import com.jjl.shortlink.project.utils.HashUtil;
 import com.jjl.shortlink.project.utils.LinkUtil;
@@ -32,6 +31,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -53,6 +53,7 @@ import static com.jjl.shortlink.project.common.constant.RedisKeyConstant.*;
 import static com.jjl.shortlink.project.common.constant.ShortLinkConstant.AMAP_API_URL;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLinkDO> implements ShortLinkService {
     private final RBloomFilter<String> shortUriCreateCachePenetrationBloomFilter;
@@ -69,14 +70,23 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkStatsTodayMapper linkStatsTodayMapper;
     @Value("${spring.short-link.stats.locale.amap-key}")
     private String amapKey;
+    @Value("${spring.short-link.domain.default}")
+    private String domain;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO shortLinkCreateReqDTO) {
         String suffix = generateSuffix(shortLinkCreateReqDTO);
         ShortLinkDO shortLinkDO = BeanUtil.toBean(shortLinkCreateReqDTO, ShortLinkDO.class);
-        shortLinkDO.setFullShortUrl(shortLinkCreateReqDTO.getDomain() + "/" + suffix);
+        shortLinkDO.setFullShortUrl(domain + "/" + suffix);
         shortLinkDO.setShortUri(suffix);
+        shortLinkDO.setEnableStatus(0);
+        shortLinkDO.setDelFlag(0);
+        shortLinkDO.setTotalUv(0);
+        shortLinkDO.setTotalPv(0);
+        shortLinkDO.setTodayPv(0);
+        shortLinkDO.setTodayUv(0);
+        shortLinkDO.setTotalUip(0);
         ShortLInkGotoDO shortLInkGotoDO = BeanUtil.toBean(shortLinkDO, ShortLInkGotoDO.class);
         try {
             baseMapper.insert(shortLinkDO);
@@ -122,8 +132,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         if (ObjectUtil.isEmpty(hasShortLinkDO)) {
             throw new ServiceException("短链接不存在");
         }
+        BeanUtil.copyProperties(shortLInkUpdateReqDTO, hasShortLinkDO);
         if (ObjectUtil.equal(hasShortLinkDO.getGid(), shortLInkUpdateReqDTO.getGid())) {
-            BeanUtil.copyProperties(shortLInkUpdateReqDTO, hasShortLinkDO);
             LambdaUpdateWrapper<ShortLinkDO> set = Wrappers.lambdaUpdate(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, shortLInkUpdateReqDTO.getGid())
                     .eq(ShortLinkDO::getFullShortUrl, shortLInkUpdateReqDTO.getFullShortUrl())
@@ -133,13 +143,51 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             baseMapper.update(hasShortLinkDO, set);
         } else {
             baseMapper.deleteById(hasShortLinkDO);
-            BeanUtil.copyProperties(shortLInkUpdateReqDTO, hasShortLinkDO);
             if (ObjectUtil.equal(shortLInkUpdateReqDTO.getValidDateType(), VailDateTypeEnum.PERMANENT.getType())) {
                 hasShortLinkDO.setValidDate(null);
             }
             baseMapper.insert(hasShortLinkDO);
         }
+        if (ObjectUtil.notEqual(shortLInkUpdateReqDTO.getValidDateType(), VailDateTypeEnum.PERMANENT.getType())
+                || ObjectUtil.notEqual(shortLInkUpdateReqDTO.getValidDate(), hasShortLinkDO.getValidDate())) {
+            stringRedisTemplate.delete(String.format(SHORT_LINK_GOTO, hasShortLinkDO.getFullShortUrl()));
+            if (hasShortLinkDO.getValidDate() != null && hasShortLinkDO.getValidDate().isBefore(LocalDateTime.now())) {
+                if (ObjectUtil.equals(shortLInkUpdateReqDTO.getValidDateType(), VailDateTypeEnum.PERMANENT.getType())
+                        || shortLInkUpdateReqDTO.getValidDate().isAfter(LocalDateTime.now())) {
+                    stringRedisTemplate.delete(String.format(SHORT_LINK_GOTO_ISNULL, shortLInkUpdateReqDTO.getFullShortUrl()));
+
+                }
+            }
+        }
         return null;
+    }
+
+    @Override
+    public ShortLinkBatchCreateRespDTO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam) {
+        List<String> originUrls = requestParam.getOriginUrls();
+        List<String> describes = requestParam.getDescribes();
+        List<ShortLinkBaseInfoRespDTO> result = new ArrayList<>();
+        for (int i = 0; i < originUrls.size(); i++) {
+            ShortLinkCreateReqDTO shortLinkCreateReqDTO = BeanUtil.toBean(requestParam, ShortLinkCreateReqDTO.class);
+            shortLinkCreateReqDTO.setOriginUrl(originUrls.get(i));
+            shortLinkCreateReqDTO.setDescribe(describes.get(i));
+            try {
+                ShortLinkCreateRespDTO shortLink = createShortLink(shortLinkCreateReqDTO);
+                ShortLinkBaseInfoRespDTO linkBaseInfoRespDTO = ShortLinkBaseInfoRespDTO.builder()
+                        .fullShortUrl(shortLink.getFullShortUrl())
+                        .originUrl(shortLink.getOriginUrl())
+                        .describe(describes.get(i))
+                        .build();
+                result.add(linkBaseInfoRespDTO);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                log.error("批量创建短链接失败，原始参数：{}", originUrls.get(i));
+            }
+        }
+        return ShortLinkBatchCreateRespDTO.builder()
+                .total(result.size())
+                .baseLinkInfos(result)
+                .build();
     }
 
     @Override
@@ -185,19 +233,14 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, shortLInkGotoDO.getGid())
                     .eq(ShortLinkDO::getFullShortUrl, fullShortUrl)
+                    .eq(ShortLinkDO::getEnableStatus,0)
                     .eq(ShortLinkDO::getDelFlag, 0);
             ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
             if (ObjectUtil.isEmpty(shortLinkDO)) {
                 response.sendRedirect("/page/notfound");
                 return;
             }
-            if (ObjectUtil.equal(shortLinkDO.getEnableStatus(), 1)) {
-                response.sendRedirect("/page/notfound");
-                return;
-            }
             if (shortLinkDO.getValidDate() != null && shortLinkDO.getValidDate().isBefore(LocalDateTime.now())) {
-                shortLinkDO.setEnableStatus(1);
-                baseMapper.updateById(shortLinkDO);
                 response.sendRedirect("/page/notfound");
                 return;
             }

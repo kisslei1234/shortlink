@@ -6,6 +6,8 @@ spring:
       prefix: /templates/
       suffix: .html
   short-link:
+    domain:
+      default: my:8001
     stats:
       locale:
         amap-key: f440e8153ca04dd6b42399bcaf6ce99d
