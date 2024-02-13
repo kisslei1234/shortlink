@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package com.jjl.shortlink.project.dto.req;
+package com.jjl.shortlink.project.service.impl;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jjl.shortlink.project.dao.entity.LinkStatsTodayDO;
+import com.jjl.shortlink.project.dao.mapper.LinkStatsTodayMapper;
+import com.jjl.shortlink.project.service.LinkStatsTodayService;
+import org.springframework.stereotype.Service;
 
 /**
- * 分组短链接监控请求参数
+ * 短链接今日统计接口实现层
  */
-@Data
-public class ShortLinkGroupStatsReqDTO {
-
-    /**
-     * 分组标识
-     */
-    private String gid;
-
-    /**
-     * 开始日期
-     */
-    private String startDate;
-
-    /**
-     * 结束日期
-     */
-    private String endDate;
+@Service
+public class LinkStatsTodayServiceImpl extends ServiceImpl<LinkStatsTodayMapper, LinkStatsTodayDO> implements LinkStatsTodayService {
 }

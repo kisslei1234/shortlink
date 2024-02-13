@@ -24,15 +24,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
- * 访问日志监控实体
+ * 短链接今日统计实体
+ * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
+@TableName("t_link_stats_today")
 @Data
-@TableName("t_link_access_logs")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkAccessLogsDO extends BaseDO {
+public class LinkStatsTodayDO extends BaseDO {
 
     /**
      * id
@@ -40,48 +43,33 @@ public class LinkAccessLogsDO extends BaseDO {
     private Long id;
 
     /**
-     * 完整短链接
-     */
-    private String fullShortUrl;
-
-    /**
      * 分组标识
      */
     private String gid;
 
     /**
-     * 用户信息
+     * 短链接
      */
-    private String user;
+    private String fullShortUrl;
 
     /**
-     * 浏览器
+     * 日期
      */
-    private String browser;
+    private Date date;
 
     /**
-     * 操作系统
+     * 今日pv
      */
-    private String os;
+    private Integer todayPv;
 
     /**
-     * ip
+     * 今日uv
      */
-    private String ip;
+    private Integer todayUv;
 
     /**
-     * 访问网络
+     * 今日ip数
      */
-    private String network;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-
-    /**
-     * 地区
-     */
-    private String locale;
+    private Integer todayUip;
     private Integer delFlag;
 }

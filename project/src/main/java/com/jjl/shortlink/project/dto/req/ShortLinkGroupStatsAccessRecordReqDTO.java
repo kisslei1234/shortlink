@@ -17,13 +17,15 @@
 
 package com.jjl.shortlink.project.dto.req;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jjl.shortlink.project.dao.entity.LinkAccessLogsDO;
 import lombok.Data;
 
 /**
- * 分组短链接监控请求参数
+ * 分组短链接监控访问记录请求参数
  */
 @Data
-public class ShortLinkGroupStatsReqDTO {
+public class ShortLinkGroupStatsAccessRecordReqDTO extends Page<LinkAccessLogsDO> {
 
     /**
      * 分组标识

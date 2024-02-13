@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-package com.jjl.shortlink.project.dto.req;
+package com.jjl.shortlink.project.service;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.jjl.shortlink.project.dao.entity.LinkStatsTodayDO;
 
 /**
- * 分组短链接监控请求参数
+ * 短链接今日统计接口层
  */
-@Data
-public class ShortLinkGroupStatsReqDTO {
-
-    /**
-     * 分组标识
-     */
-    private String gid;
-
-    /**
-     * 开始日期
-     */
-    private String startDate;
-
-    /**
-     * 结束日期
-     */
-    private String endDate;
+public interface LinkStatsTodayService extends IService<LinkStatsTodayDO> {
 }

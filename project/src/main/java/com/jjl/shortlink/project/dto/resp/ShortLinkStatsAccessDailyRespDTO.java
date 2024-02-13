@@ -15,73 +15,40 @@
  * limitations under the License.
  */
 
-package com.jjl.shortlink.project.dao.entity;
+package com.jjl.shortlink.project.dto.resp;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.jjl.shortlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 访问日志监控实体
+ * 短链接基础访问监控响应参数
+ * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
 @Data
-@TableName("t_link_access_logs")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkAccessLogsDO extends BaseDO {
+public class ShortLinkStatsAccessDailyRespDTO {
 
     /**
-     * id
+     * 日期
      */
-    private Long id;
+    private String date;
 
     /**
-     * 完整短链接
+     * 访问量
      */
-    private String fullShortUrl;
+    private Integer pv;
 
     /**
-     * 分组标识
+     * 独立访客数
      */
-    private String gid;
+    private Integer uv;
 
     /**
-     * 用户信息
+     * 独立IP数
      */
-    private String user;
-
-    /**
-     * 浏览器
-     */
-    private String browser;
-
-    /**
-     * 操作系统
-     */
-    private String os;
-
-    /**
-     * ip
-     */
-    private String ip;
-
-    /**
-     * 访问网络
-     */
-    private String network;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-
-    /**
-     * 地区
-     */
-    private String locale;
-    private Integer delFlag;
+    private Integer uip;
 }
