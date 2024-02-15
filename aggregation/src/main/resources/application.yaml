@@ -9,9 +9,8 @@ spring:
     url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
   data:
     redis:
-      host: 127.0.0.1
+      host: 124.70.87.154
       port: 6379
-      password: 123456
   mvc:
     view:
       prefix: /templates/
@@ -32,13 +31,13 @@ short-link:
     time-window: 1
     max-access-count: 20
   domain:
-    default: nurl.ink:8003
+    default: nurl.ink:8001
   stats:
     locale:
-      amap-key: 824c511f0997586ea016f979fdb23087
+      amap-key: f440e8153ca04dd6b42399bcaf6ce99d
   goto-domain:
     white-list:
-      enable: true
+      enable: false
       names: '拿个offer,知乎,掘金,博客园'
       details:
         - nageoffer.com

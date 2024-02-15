@@ -1008,7 +1008,7 @@ CREATE TABLE `t_link_stats_today_15`
     UNIQUE KEY `idx_unique_today_stats` (`full_short_url`,`gid`,`date`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;;
 
-CREATE TABLE `t_link_stats_today_2`
+CREATE TABLE `t_link_stats_today`
 (
     `id`             bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `gid`            varchar(32)  DEFAULT 'default' COMMENT '分组标识',
