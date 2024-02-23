@@ -11,6 +11,7 @@ spring:
     redis:
       host: 124.70.87.154
       port: 6379
+      password: 36fc8088-ad5d-4611-b480-ab60de6a2d74shabijrh123
   mvc:
     view:
       prefix: /templates/
