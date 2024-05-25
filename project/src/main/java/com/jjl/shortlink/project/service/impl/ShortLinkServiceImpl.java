@@ -25,6 +25,7 @@ import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.jjl.shortlink.project.mq.producer.ShortLinkStatsSaveProducer;
+import com.jjl.shortlink.project.remote.DataPackageService;
 import com.jjl.shortlink.project.service.LinkStatsTodayService;
 import com.jjl.shortlink.project.service.ShortLinkService;
 import com.jjl.shortlink.project.toolkit.HashUtil;
@@ -59,6 +60,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jodd.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -85,8 +87,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -114,6 +115,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkStatsTodayService linkStatsTodayService;
     private final ShortLinkStatsSaveProducer shortLinkStatsSaveProducer;
     private final GotoDomainWhiteListConfiguration gotoDomainWhiteListConfiguration;
+    private final DataPackageService dataPackageService;
 
     @Value("${short-link.domain.default}")
     private String createShortLinkDefaultDomain;
@@ -160,6 +162,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 LinkUtil.getLinkCacheValidTime(requestParam.getValidDate()), TimeUnit.MILLISECONDS
         );
         shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
+        dataPackageService.createDataPackage("test");
         return ShortLinkCreateRespDTO.builder()
                 .fullShortUrl("http://" + shortLinkDO.getFullShortUrl())
                 .originUrl(requestParam.getOriginUrl())

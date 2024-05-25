@@ -8,9 +8,9 @@ spring:
     # active: dev
   data:
     redis:
-      host: 124.70.87.154
+      host: 47.92.210.212
       port: 6379
-      password: 36fc8088-ad5d-4611-b480-ab60de6a2d74shabijrh123
+      password: 123456
   cloud:
     gateway:
       httpclient:

@@ -9,9 +9,9 @@ spring:
     url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
   data:
     redis:
-      host: 124.70.87.154
+      host: 47.92.210.212
       port: 6379
-      password: 36fc8088-ad5d-4611-b480-ab60de6a2d74shabijrh123
+      password: 123456
   mvc:
     view:
       prefix: /templates/
@@ -19,7 +19,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 47.92.210.212:8848
 
 aggregation:
   remote-url: http://127.0.0.1:${server.port}

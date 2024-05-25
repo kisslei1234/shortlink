@@ -15,7 +15,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 124.70.87.154:8848
+        server-addr: 47.92.210.212:8848
 
 short-link:
   group:
