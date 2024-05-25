@@ -80,4 +80,5 @@ public class LinkAccessStatsDO extends BaseDO {
      * 星期
      */
     private Integer weekday;
+    private Integer delFlag;
 }

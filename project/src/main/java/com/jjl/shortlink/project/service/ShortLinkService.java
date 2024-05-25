@@ -3,7 +3,7 @@ package com.jjl.shortlink.project.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jjl.shortlink.project.dao.entity.ShortLinkDO;
-import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
+import com.jjl.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
@@ -24,7 +24,7 @@ public interface ShortLinkService  extends IService<ShortLinkDO> {
 
     List<ShortLinkCountQueryRespDTO> listGroupShortLinkCount(List<String> gidList);
 
-    Void updateShortLink(ShortLInkUpdateReqDTO shortLInkUpdateReqDTO);
+    Void updateShortLink(ShortLinkUpdateReqDTO shortLInkUpdateReqDTO);
 
     void restoreUrl(String shortUri, HttpServletRequest request, HttpServletResponse response) throws IOException;
     /**

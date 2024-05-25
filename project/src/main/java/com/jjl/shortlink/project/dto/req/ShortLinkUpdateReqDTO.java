@@ -6,17 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortLInkUpdateReqDTO {
+public class ShortLinkUpdateReqDTO {
     /**
      * 完整短链接
      */
     private String fullShortUrl;
-
+    /* *
+     * 原始分组标识
+     */
+    private String originGid;
     /**
      * 原始链接
      */
@@ -36,7 +40,7 @@ public class ShortLInkUpdateReqDTO {
      * 有效期
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date validDate;
+    private LocalDateTime validDate;
 
     /**
      * 描述

@@ -3,7 +3,7 @@ package com.jjl.shortlink.project.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jjl.shortlink.project.common.convention.result.Result;
 import com.jjl.shortlink.project.common.convention.result.Results;
-import com.jjl.shortlink.project.dto.req.ShortLInkUpdateReqDTO;
+import com.jjl.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.jjl.shortlink.project.dto.req.ShortLinkPageReqDTO;
@@ -52,7 +52,7 @@ public class ShortLInkController {
      * 修改短链接
      * */
     @PostMapping("/api/short-link/v1/update")
-    public Result<Void> updateShortLink(@RequestBody ShortLInkUpdateReqDTO shortLInkUpdateReqDTO) {
+    public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO shortLInkUpdateReqDTO) {
         shortLinkService.updateShortLink(shortLInkUpdateReqDTO);
         return Results.success();
     }

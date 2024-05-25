@@ -11,6 +11,7 @@
         <module>admin</module>
         <module>project</module>
         <module>gateway</module>
+        <module>datapackage</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ShortLInkGotoDO {
+public class ShortLinkGotoDO {
     @TableId
     private Long id;
     private String gid;

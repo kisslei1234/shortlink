@@ -65,4 +65,5 @@ public class LinkOsStatsDO extends BaseDO {
      * 操作系统
      */
     private String os;
+    private Integer delFlag;
 }

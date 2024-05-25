@@ -15,56 +15,34 @@
  * limitations under the License.
  */
 
-package com.jjl.shortlink.project.dao.entity;
+package com.jjl.shortlink.project.config;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.jjl.shortlink.project.common.database.BaseDO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.util.List;
 
 /**
- * 访问设备统计访问实体
+ * 跳转域名白名单配置文件
  */
 @Data
-@TableName("t_link_device_stats")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class LinkDeviceStatsDO extends BaseDO {
+@Component
+@ConfigurationProperties(prefix = "short-link.goto-domain.white-list")
+public class GotoDomainWhiteListConfiguration {
 
     /**
-     * id
+     * 是否开启跳转原始链接域名白名单验证
      */
-    private Long id;
+    private Boolean enable;
 
     /**
-     * 完整短链接
+     * 跳转原始域名白名单网站名称集合
      */
-    private String fullShortUrl;
+    private String names;
 
     /**
-     * 分组标识
+     * 可跳转的原始链接域名
      */
-    private String gid;
-
-    /**
-     * 日期
-     */
-    private Date date;
-
-    /**
-     * 访问量
-     */
-    private Integer cnt;
-
-    /**
-     * 访问设备
-     */
-    private String device;
-    private Integer delFlag;
-
+    private List<String> details;
 }

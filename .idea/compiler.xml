@@ -10,6 +10,7 @@
         <module name="admin" />
         <module name="project" />
         <module name="gateway" />
+        <module name="datapackage" />
       </profile>
     </annotationProcessing>
   </component>
